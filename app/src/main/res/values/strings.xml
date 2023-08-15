@@ -1,0 +1,6 @@
+<resources>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="distance_0_meters">Distance: 0 meters</string>
+    <string name="draw_lines">Draw Lines</string>
+    <string name="start">Start</string>
+</resources>
