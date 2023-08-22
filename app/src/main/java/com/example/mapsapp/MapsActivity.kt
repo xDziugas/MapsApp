@@ -38,7 +38,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var isTracking = false
     private lateinit var startStopButton: Button
     private lateinit var distanceTextView: TextView
+    private lateinit var savePath: Button
     var firstUpdate = false
+    private var totalDistance: Double = 0.0
+
+    val databaseHelper = DatabaseHelper(this)
+
+    private lateinit var navSaved: Button
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -94,6 +100,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        navSaved = findViewById(R.id.btn_NavSaved)
+        savePath = findViewById(R.id.btn_savePath)
+
         mapView = findViewById(R.id.mw_map)
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
@@ -109,15 +118,28 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             if (isTracking) {
                 startStopButton.text = "Start"
                 distanceTextView.visibility = View.GONE
+                navSaved.visibility = View.VISIBLE
+                savePath.visibility = View.VISIBLE
 
                 stopTracking()
             } else {
                 startStopButton.text = "Stop"
                 distanceTextView.visibility = View.VISIBLE
+                navSaved.visibility = View.GONE
+                savePath.visibility = View.GONE
 
                 updateDistance(0.0)
                 startTracking()
             }
+        }
+
+        navSaved.setOnClickListener(){
+            val intent = Intent(this, SavedDistancesActivity::class.java)
+            startActivity(intent)
+        }
+
+        savePath.setOnClickListener(){
+            saveToDatabase()
         }
 
         // Register the locationReceiver to receive location updates from the service
@@ -131,6 +153,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val markerOptions = MarkerOptions().position(latLng)
             .snippet(text)
         mMap.addMarker(markerOptions)
+    }
+
+    private fun saveToDatabase(){
+        val savedDistance = SavedDistance(
+            id = 1,
+            pathPoints = pathPoints,
+            distance = totalDistance
+        )
+
+        databaseHelper.addSavedDistance(savedDistance)
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -166,6 +198,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun startTracking() {
         pathPoints.clear()
+        totalDistance = 0.0
         previousLocation = null
         mMap.clear()
         resetService()
@@ -174,7 +207,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun stopTracking() {
         if(isTracking){
-            mMap.clear()
             stopService()
             isTracking = false
             firstUpdate = false
@@ -280,8 +312,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     @SuppressLint("SetTextI18n")
     private fun updateDistance(distance: Double){
+        totalDistance = distance
         val decimalFormat = DecimalFormat("#.##")
         val formattedValue = decimalFormat.format(distance)
         distanceTextView.text = "Distance: $formattedValue meters"
     }
 }
+
+//TODO: save btn
+//TODO: load btn + screen of past saves
+//todo: app onDestroy calls randomly
