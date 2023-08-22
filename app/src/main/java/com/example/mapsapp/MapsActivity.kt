@@ -319,6 +319,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 }
 
-//TODO: save btn
-//TODO: load btn + screen of past saves
+//TODO: load btn
 //todo: app onDestroy calls randomly
+//todo: refactor saved distances UI
+//todo: add dates to saved distances

@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="16dp"
+            android:paddingBottom="16dp"
             android:gravity="center">
 
             <Button
@@ -30,17 +30,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="16dp"
-                android:text="@string/start" />
+                android:text="@string/start"
+                android:textAlignment="center" />
 
             <Button
+                android:id="@+id/btn_savePath"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/btn_savePath"
-                android:gravity="center_horizontal"
-                android:layout_marginBottom="16dp"
-                android:visibility="gone"
-                android:text="Save"/>
+                android:text="Save"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:visibility="visible" />
 
         </LinearLayout>
 
