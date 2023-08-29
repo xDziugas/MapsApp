@@ -6,6 +6,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.ListView
+import androidx.core.content.ContextCompat.startActivity
+import com.example.mapsapp.MapsActivity.Companion.EXTRA_LATITUDE
+import com.example.mapsapp.MapsActivity.Companion.EXTRA_LONGITUDE
 
 class SavedDistancesActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -21,12 +24,18 @@ class SavedDistancesActivity : AppCompatActivity(), View.OnClickListener {
 
         val savedDistances = databaseHelper.getSavedDistances()
 
-        val adapter = SavedDistancesAdapter(this, savedDistances)
         val listView = findViewById<ListView>(R.id.lv_dataList)
-        listView.adapter = adapter
+        val adapter = SavedDistancesAdapter(this, savedDistances) { savedDistance ->
+            //return to map, draw lines, show pathpoints
+            val intent = Intent(this, MapsActivity::class.java)
+            //intent.putExtra("PATH_POINTS", savedDistance?.pathPoints.toString())
+            intent.putParcelableArrayListExtra("PATH_POINTS",
+                savedDistance?.pathPoints?.let { ArrayList(it) })
 
-        // Display the saved distances in the activity
-        // You can use a RecyclerView, ListView, or any other UI component to display the data
+            startActivity(intent)
+            finish()
+        }
+        listView.adapter = adapter
         // Iterate over the savedDistances list and populate your UI accordingly
 
         navMaps = findViewById(R.id.btn_NavMaps)

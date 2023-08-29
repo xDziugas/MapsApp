@@ -2,14 +2,21 @@ package com.example.mapsapp
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import com.example.mapsapp.MapsActivity.Companion.EXTRA_LATITUDE
 import java.text.DecimalFormat
 
-class SavedDistancesAdapter(context: Context, savedDistances: List<SavedDistance>) : ArrayAdapter<SavedDistance>(context, 0, savedDistances) {
+class SavedDistancesAdapter(
+    context: Context,
+    savedDistances: List<SavedDistance>,
+    private val onItemClick: (SavedDistance?) -> Unit
+) : ArrayAdapter<SavedDistance>(context, 0, savedDistances) {
 
     private lateinit var viewHolder: ViewHolder
 
@@ -27,6 +34,9 @@ class SavedDistancesAdapter(context: Context, savedDistances: List<SavedDistance
         val savedDistance = getItem(position)
 
         // Bind the data to the UI elements in the list item layout
+        itemView?.setOnClickListener{
+            onItemClick(getItem(position))
+        }
 
         //viewHolder.pathPointsTextView.text = savedDistance?.pathPoints.toString()
         updateDistance(savedDistance?.distance ?: 0.0)
@@ -45,4 +55,6 @@ class SavedDistancesAdapter(context: Context, savedDistances: List<SavedDistance
         val pathPointsTextView: TextView = view.findViewById(R.id.pathPointsTextView)
         val distanceTextView: TextView = view.findViewById(R.id.tv_savedDistance)
     }
+
 }
+

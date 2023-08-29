@@ -41,6 +41,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var savePath: Button
     var firstUpdate = false
     private var totalDistance: Double = 0.0
+    private var isMapLoaded = false
 
     val databaseHelper = DatabaseHelper(this)
 
@@ -120,6 +121,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 distanceTextView.visibility = View.GONE
                 navSaved.visibility = View.VISIBLE
                 savePath.visibility = View.VISIBLE
+                if(pathPoints.isNotEmpty()){
+                    addPointer(pathPoints.last(), "End")
+                }
 
                 stopTracking()
             } else {
@@ -147,6 +151,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             locationReceiver,
             IntentFilter(ACTION_UPDATE_LOCATION)
         )
+
+        //val pathPointsToDisplay = intent.getStringExtra("PATH_POINTS") as List<LatLng>?
+        val pathPointsToDisplay = intent.getParcelableArrayListExtra<LatLng>("PATH_POINTS")
+        if (pathPointsToDisplay != null){
+            displaySavedPathPoints(pathPointsToDisplay)
+        }
+    }
+
+    private fun displaySavedPathPoints(pathPointsToDisplay: List<LatLng>){
+        if(::mMap.isInitialized){
+            mMap.clear()
+            drawPolyline(pathPointsToDisplay)
+            addPointer(pathPointsToDisplay[0], "Start")
+            addPointer(pathPointsToDisplay.last(), "End")
+        }else{
+            mapView.getMapAsync { googleMap ->
+                mMap = googleMap
+                displaySavedPathPoints(pathPointsToDisplay)
+            }
+        }
     }
 
     private fun addPointer(latLng: LatLng, text: String){
@@ -168,6 +192,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        isMapLoaded = true
         checkPermission()
     }
 
@@ -227,11 +252,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun updateMapLocation(latLng: LatLng) {
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
-        drawPolyline()
+        drawPolyline(pathPoints)
     }
 
     @SuppressLint("SetTextI18n")
-    private fun drawPolyline() {
+    private fun drawPolyline(pathPoints: List<LatLng>) {
         val polylineOptions = PolylineOptions().addAll(pathPoints)
         mMap.addPolyline(polylineOptions)
     }
@@ -319,7 +344,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 }
 
-//TODO: load btn
 //todo: app onDestroy calls randomly
 //todo: refactor saved distances UI
 //todo: add dates to saved distances
