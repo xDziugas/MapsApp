@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.time.LocalDate
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
@@ -18,15 +19,18 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         private const val COLUMN_ID = "id"
         private const val COLUMN_PATH_POINTS = "path_points"
         private const val COLUMN_DISTANCE = "distance"
+        private const val COLUMN_DATE = "date"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
-        val createTableQuery = "CREATE TABLE $TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY, $COLUMN_PATH_POINTS TEXT, $COLUMN_DISTANCE REAL)"
+        val createTableQuery = "CREATE TABLE $TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY, $COLUMN_PATH_POINTS TEXT, $COLUMN_DISTANCE REAL, $COLUMN_DATE TEXT)"
         db.execSQL(createTableQuery)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        // Handle database schema changes if needed
+        val dropTableQuery = "DROP TABLE IF EXISTS $TABLE_NAME"
+        db.execSQL(dropTableQuery)
+        onCreate(db)
     }
 
     fun addSavedDistance(savedDistance: SavedDistance) {
@@ -35,6 +39,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         val contentValues = ContentValues().apply {
             put(COLUMN_PATH_POINTS, convertPathPointsToString(savedDistance.pathPoints))
             put(COLUMN_DISTANCE, savedDistance.distance)
+            put(COLUMN_DATE, savedDistance.date.toString())
         }
 
         db.insert(TABLE_NAME, null, contentValues)
@@ -57,14 +62,17 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             val idIndex = cursor.getColumnIndex(COLUMN_ID)
             val pathPointsIndex = cursor.getColumnIndex(COLUMN_PATH_POINTS)
             val distanceIndex = cursor.getColumnIndex(COLUMN_DISTANCE)
+            val dateIndex = cursor.getColumnIndex(COLUMN_DATE)
 
-            if (idIndex >= 0 && pathPointsIndex >= 0 && distanceIndex >= 0) {
+            if (idIndex >= 0 && pathPointsIndex >= 0 && distanceIndex >= 0 && dateIndex >= 0) {
                 val id = cursor.getInt(idIndex)
                 val pathPointsJson = cursor.getString(pathPointsIndex)
                 val distance = cursor.getDouble(distanceIndex)
+                val date = cursor.getString(dateIndex)
+                val dateFormatted = LocalDate.parse(date)
 
                 val pathPoints = convertStringToPathPoints(pathPointsJson)
-                val savedDistance = SavedDistance(id, pathPoints, distance)
+                val savedDistance = SavedDistance(id, pathPoints, distance, dateFormatted)
                 savedDistances.add(savedDistance)
             }
         }

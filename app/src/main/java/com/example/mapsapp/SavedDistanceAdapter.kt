@@ -11,6 +11,8 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.example.mapsapp.MapsActivity.Companion.EXTRA_LATITUDE
 import java.text.DecimalFormat
+import java.time.LocalDate
+import java.util.*
 
 class SavedDistancesAdapter(
     context: Context,
@@ -39,20 +41,24 @@ class SavedDistancesAdapter(
         }
 
         //viewHolder.pathPointsTextView.text = savedDistance?.pathPoints.toString()
-        updateDistance(savedDistance?.distance ?: 0.0)
+        updateDistance(savedDistance!!)
 
         return itemView!!
     }
 
     @SuppressLint("SetTextI18n")
-    private fun updateDistance(distance: Double){
+    private fun updateDistance(savedDistance: SavedDistance){
+        val distance = savedDistance.distance
         val decimalFormat = DecimalFormat("#.##")
         val formattedValue = decimalFormat.format(distance)
         viewHolder.distanceTextView.text = "Distance: $formattedValue meters"
+        val date = savedDistance.date
+
+        viewHolder.dateTextView.text = "Date: ${date.year}/${date.monthValue}/${date.dayOfMonth}"
     }
 
     private class ViewHolder(view: View) {
-        val pathPointsTextView: TextView = view.findViewById(R.id.pathPointsTextView)
+        val dateTextView: TextView = view.findViewById(R.id.tv_date)
         val distanceTextView: TextView = view.findViewById(R.id.tv_savedDistance)
     }
 

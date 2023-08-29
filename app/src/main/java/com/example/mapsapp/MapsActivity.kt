@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import java.text.DecimalFormat
+import java.time.LocalDate
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -183,7 +184,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val savedDistance = SavedDistance(
             id = 1,
             pathPoints = pathPoints,
-            distance = totalDistance
+            distance = totalDistance,
+            date = LocalDate.now()
         )
 
         databaseHelper.addSavedDistance(savedDistance)
