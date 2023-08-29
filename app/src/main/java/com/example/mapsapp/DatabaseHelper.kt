@@ -88,5 +88,17 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return gson.fromJson(pathPointsJson, type)
     }
 
+    fun deleteItemFromDatabase(adapter: SavedDistancesAdapter, itemId: Int) {
+        val db = writableDatabase
+        val whereClause = "$COLUMN_ID = ?"
+        val whereArgs = arrayOf(itemId.toString())
+        db.delete(TABLE_NAME, whereClause, whereArgs)
+        db.close()
+
+        val newSavedDistances = getSavedDistances()
+        // Update the adapter's savedDistances list
+        adapter.updateSavedDistances(newSavedDistances)
+    }
+
     // Implement other database operations (update, delete) as needed
 }

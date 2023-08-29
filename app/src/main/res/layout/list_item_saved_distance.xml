@@ -22,4 +22,32 @@
         android:textSize="14sp"
         android:textColor="@android:color/darker_gray" />
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:gravity="end"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_weight="1"
+            android:id="@+id/iv_delete"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="end"
+            android:layout_margin="5dp"
+            android:background="@drawable/delete"
+            />
+
+        <ImageView
+            android:layout_weight="1"
+            android:id="@+id/iv_load"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="end"
+            android:layout_margin="5dp"
+            android:background="@drawable/load"/>
+
+
+    </LinearLayout>
+
 </LinearLayout>

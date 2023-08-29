@@ -25,10 +25,9 @@ class SavedDistancesActivity : AppCompatActivity(), View.OnClickListener {
         val savedDistances = databaseHelper.getSavedDistances()
 
         val listView = findViewById<ListView>(R.id.lv_dataList)
-        val adapter = SavedDistancesAdapter(this, savedDistances) { savedDistance ->
+        val adapter = SavedDistancesAdapter(this, savedDistances, databaseHelper) { savedDistance ->
             //return to map, draw lines, show pathpoints
             val intent = Intent(this, MapsActivity::class.java)
-            //intent.putExtra("PATH_POINTS", savedDistance?.pathPoints.toString())
             intent.putParcelableArrayListExtra("PATH_POINTS",
                 savedDistance?.pathPoints?.let { ArrayList(it) })
 
