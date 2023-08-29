@@ -43,10 +43,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     var firstUpdate = false
     private var totalDistance: Double = 0.0
     private var isMapLoaded = false
-
-    val databaseHelper = DatabaseHelper(this)
-
     private lateinit var navSaved: Button
+
+    private val databaseHelper: DatabaseHelper by lazy {
+        DatabaseHelper(this)
+    }
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -60,7 +61,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private val locationReceiver = object : BroadcastReceiver() {
         @SuppressLint("SetTextI18n")
         override fun onReceive(context: Context?, intent: Intent?) {
-
             val distance: Double? = intent?.getDoubleExtra(EXTRA_DISTANCE, 0.0)
             distance?.let {
                 if(distance != 0.0)
@@ -77,7 +77,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 location.longitude = lng
                 updatePathPoints(location)
             }
-
         }
     }
 
@@ -102,15 +101,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        navSaved = findViewById(R.id.btn_NavSaved)
-        savePath = findViewById(R.id.btn_savePath)
-
         mapView = findViewById(R.id.mw_map)
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        navSaved = findViewById(R.id.btn_NavSaved)
+        savePath = findViewById(R.id.btn_savePath)
         startStopButton = findViewById(R.id.btn_start)
         distanceTextView = findViewById(R.id.tv_distance)
 

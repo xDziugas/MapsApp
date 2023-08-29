@@ -96,9 +96,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.close()
 
         val newSavedDistances = getSavedDistances()
-        // Update the adapter's savedDistances list
         adapter.updateSavedDistances(newSavedDistances)
     }
-
-    // Implement other database operations (update, delete) as needed
 }
